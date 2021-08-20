@@ -9,7 +9,8 @@ A simple calculator made along The Odin Project - The main idea is to mimic how 
 The calculator can be tested here : <link>
 
 
-:nut_and_bolt: ## How does it works ? :nut_and_bolt:
+:nut_and_bolt: **How does it works ?** :nut_and_bolt:
+
 The layout is made entirely in HTML / CSS. Js code has different missions : 
 * Put events on keys (Click) and keypad
 * Collect datas from events and route them 
