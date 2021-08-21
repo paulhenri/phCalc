@@ -14,6 +14,8 @@ let TYPING = [];
 /** Last operator that was typed*/
 let OPERATOR = '';
 
+let bFirstType = true;
+
 const KEYS = document.querySelectorAll('.key');
 const OP_KEYS = document.querySelectorAll('.operator');
 
@@ -89,20 +91,27 @@ function keyhandler(e) {
       break;
     case 'Enter':
       computeOperation();
+      lightOperator('=');
+      break;
     case '=':
       computeOperation();
+      lightOperator('=');
       break;
     default:
-      console.log(e);
+      break;
   }
 }
 
 /** To light the key that was pressed
  * @param {string} key: The key that need to be lit */
 function lightKey(key) {
-  const myKey = Array.from(document.querySelectorAll('.key')).find( (e) =>
-    e.innerText == key);
-  myKey.classList.add('lit');
+  document.querySelectorAll('.key').forEach((el) => {
+    if (el.innerText == key) {
+      el.classList.add('lit');
+    } else {
+      el.classList.remove('lit');
+    }
+  });
 }
 
 /** Turn the light on the last operator key that was pressed, except for the '='
@@ -136,8 +145,7 @@ function divideZeroException() {
 function computeOperation() {
   if (OPERATOR != '') {
     const right = convertTyping();
-    console.log(`Carry == ${CARRY}`);
-    console.log(`RIGHT = ${right}`);
+    console.log(OPERATOR);
     switch (OPERATOR) {
       case '+':
         CARRY = CARRY + right;
@@ -158,7 +166,6 @@ function computeOperation() {
           resetCalc();
         }
       default:
-        console.log(`No know operator ${OPERATOR}`);
         break;
     }
     TYPING = [];
@@ -173,9 +180,10 @@ function computeOperation() {
 function setOperator(op) {
   lightOperator(op);
 
-  if (OPERATOR != '' && TYPING.length > 0 ) {
+  if (OPERATOR != '' && TYPING.length > 0 && bFirstType==false ) {
     computeOperation();
   } else {
+    bFirstType=true;
     CARRY = convertTyping();
     TYPING= [];
   }
@@ -190,11 +198,13 @@ function convertTyping() {
 }
 
 /** Function to write LEFT_VALUE or RIGHT_VALUE
-  * @param {integer} num - Unit number being written
+ * @param {integer} num - Unit number being written
   * **/
 function setOperand(num) {
   lightKey(num);
-  TYPING.push(num);
+  if (TYPING.length <= 13) {
+    TYPING.push(num);
+  }
   refreshLcd(TYPING.join(''));
 }
 /** To add a decimal separator to the current value
@@ -215,7 +225,6 @@ function setDot() {
  * @param {string} content : Content the lcd will be filled with.
   * */
 function refreshLcd(content) {
-  console.log(SCREEN);
   SCREEN.innerText = content;
 }
 
@@ -223,7 +232,8 @@ function refreshLcd(content) {
  * @param {event} eve: Event passed by listener */
 function removeTransition(eve) {
   if (eve.propertyName !== 'transform') return;
-  this.classList.remove('lit');
+  console.log('RemoveTransition');
+  eve.target.classList.remove('lit');
 }
 
 /** Reset the calculator, empty buffer and operator */
@@ -234,4 +244,7 @@ function resetCalc() {
   CARRY=0;
   OPERATOR='';
   refreshLcd(CARRY);
+  KEYS.forEach((key) => {
+    key.classList.remove('lit');
+  });
 }
